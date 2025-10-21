@@ -10,7 +10,6 @@ const MONGO_URI = process.env.MONGODB_URI;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 // configuración de moongoose
 mongoose.connect(MONGO_URI)
     .then(() => {
