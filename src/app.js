@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import usersRouter from './routes/users.router.js';
 
 // variables de entorno
 const app = express();
@@ -9,6 +10,9 @@ const MONGO_URI = process.env.MONGODB_URI;
 // middleware para parsear el body de las peticiones
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ruta para los usuarios
+app.use('/api/users', usersRouter);
 
 // configuración de moongoose
 mongoose.connect(MONGO_URI)
