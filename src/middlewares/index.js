@@ -14,6 +14,7 @@ export {
 // Middlewares de validación
 export {
     validateLoginData,
+    validateRegisterData,
     validateUserData,
     validateEmail,
     validatePhone

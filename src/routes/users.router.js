@@ -10,12 +10,6 @@ router.get('/', asyncHandler(async (req, res) => {
     res.json(users);
 }));
 
-//endpoint para crear un nuevo usuario
-router.post('/', asyncHandler(async (req, res) => {
-    const user = await User.create(req.body);
-    res.status(201).json({ message: 'Usuario creado correctamente', user });
-}));
-
 //endpoint para obtener el usuario autenticado
 router.get('/me', isAuthenticated, (req, res) => {
     res.json(req.session.user);

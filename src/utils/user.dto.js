@@ -17,6 +17,10 @@ export const createUserSessionData = (user) => {
         role: user.role,
         isActive: user.isActive,
         isEmailVerified: user.isEmailVerified,
+        phone: user.phone,
+        dateOfBirth: user.dateOfBirth,
+        address: user.address,
+        city: user.city,
         preferences: {
             language: user.preferences?.language || 'es',
             timezone: user.preferences?.timezone || 'America/Argentina/Buenos_Aires'

@@ -2,12 +2,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import usersRouter from './routes/users.router.js';
 import authRouter from './routes/auth.router.js';
+import viewsRouter from './routes/views.router.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { errorHandler, notFound, requestLogger } from './middlewares/index.js';
 import MongoStore from 'connect-mongo';
 import handlebars from 'express-handlebars';
-import { join, __dirname, setupGracefulShutdown } from './utils/index.js';
+import { join, __dirname } from './utils/index.js';
 
 
 // variables de entorno
@@ -17,7 +18,18 @@ const MONGO_URI = process.env.MONGODB_URI;
 const SECRET = process.env.SECRET;
 
 // Configuración de handlebars
-app.engine('handlebars', handlebars.engine());
+app.engine('handlebars', handlebars.engine({
+    helpers: {
+        formatDate: function(date) {
+            if (!date) return 'No especificada';
+            return new Date(date).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    }
+}));
 app.set('view engine', 'handlebars');
 app.set('views', join(__dirname, 'views'));
 
@@ -53,9 +65,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);
 
 // ruta de home
-app.get('/', (req, res) => {
-    res.render('home', { title: 'Home' });
-});
+app.use('/', viewsRouter);
 
 // Configuración de mongoose
 mongoose.connect(MONGO_URI)
@@ -72,12 +82,8 @@ app.use(notFound);
 // Middleware global para manejo de errores (debe ir al final)
 app.use(errorHandler);
 
-// Graceful shutdown - manejo adecuado de eventos de cierre
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-// Configurar el manejo de cierre graceful
-setupGracefulShutdown(server, mongoose);
 
 export default app;

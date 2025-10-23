@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Mi Aplicación</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- CSS personalizado para registro -->
+    <link href="/css/register.css" rel="stylesheet">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-card">
+            <!-- Sección del formulario (izquierda) -->
+            <div class="register-form-section">
+                <div class="register-form-content">
+                    <!-- Header -->
+                    <div class="register-header">
+                        <h2>Crear Cuenta</h2>
+                        <p>Únete a nuestra comunidad</p>
+                    </div>
+                            <!-- Alert para errores -->
+                            <div id="alertContainer"></div>
+                            
+                            <!-- Formulario de Registro -->
+                            <form id="registerForm" action="/api/auth/register" method="POST">
+                                <!-- Campos requeridos -->
+                                <div class="form-row mb-3">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Nombre" required>
+                                        <label for="firstName">
+                                            <i class="bi bi-person me-2"></i>Nombre
+                                        </label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Apellido" required>
+                                        <label for="lastName">
+                                            <i class="bi bi-person me-2"></i>Apellido
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                    <label for="email">
+                                        <i class="bi bi-envelope me-2"></i>Email
+                                    </label>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
+                                    <label for="password">
+                                        <i class="bi bi-lock me-2"></i>Contraseña
+                                    </label>
+                                    <div class="form-text">Mínimo 8 caracteres</div>
+                                </div>
+                                
+                                <!-- Campos opcionales -->
+                                <div class="form-row mb-3">
+                                    <div class="form-floating optional-field">
+                                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="+5491123456789">
+                                        <label for="phone">
+                                            <i class="bi bi-telephone me-2"></i>Teléfono
+                                        </label>
+                                    </div>
+                                    <div class="form-floating optional-field">
+                                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth">
+                                        <label for="dateOfBirth">
+                                            <i class="bi bi-calendar me-2"></i>Fecha de Nacimiento
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-floating mb-3 optional-field">
+                                    <input type="text" class="form-control" id="address" name="address" placeholder="Dirección">
+                                    <label for="address">
+                                        <i class="bi bi-geo-alt me-2"></i>Dirección
+                                    </label>
+                                </div>
+                                
+                                <div class="form-floating mb-3 optional-field">
+                                    <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad">
+                                    <label for="city">
+                                        <i class="bi bi-building me-2"></i>Ciudad
+                                    </label>
+                                </div>
+                                
+                                <!-- Términos y condiciones -->
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        Acepto los <a href="#" class="text-decoration-none">términos y condiciones</a>
+                                    </label>
+                                </div>
+                                
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary btn-register">
+                                        <i class="bi bi-person-plus me-2"></i>
+                                        Crear Cuenta
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Divider -->
+                            <div class="divider">
+                                <span>o</span>
+                            </div>
+                            
+                            <!-- Enlaces de autenticación -->
+                            <div class="auth-links text-center">
+                                <p class="mb-2">¿Ya tienes cuenta?</p>
+                                <a href="/login" class="btn btn-outline-primary">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Iniciar Sesión
+                                </a>
+                            </div>
+                            
+                    <!-- Enlaces adicionales -->
+                    <div class="text-center mt-4">
+                        <a href="/" class="text-decoration-none">
+                            <i class="bi bi-house me-1"></i>
+                            Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección de imagen (derecha) -->
+            <div class="register-image-section">
+                <div class="register-image-content">
+                    <i class="bi bi-people-fill"></i>
+                    <h3>¡Bienvenido!</h3>
+                    <p>Únete a miles de usuarios que ya confían en nuestra plataforma. Crea tu cuenta y comienza a disfrutar de todos nuestros servicios.</p>
+                    
+                    <div class="feature">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Datos seguros y protegidos</span>
+                    </div>
+                    <div class="feature">
+                        <i class="bi bi-lightning"></i>
+                        <span>Acceso instantáneo</span>
+                    </div>
+                    <div class="feature">
+                        <i class="bi bi-heart"></i>
+                        <span>Experiencia personalizada</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript para manejo del formulario -->
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+                phone: formData.get('phone') || undefined,
+                dateOfBirth: formData.get('dateOfBirth') || undefined,
+                address: formData.get('address') || undefined,
+                city: formData.get('city') || undefined
+            };
+            
+            // Limpiar alertas anteriores
+            document.getElementById('alertContainer').innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Registro exitoso
+                    showAlert('success', '¡Cuenta creada exitosamente! Redirigiendo...');
+                    setTimeout(() => {
+                        window.location.href = '/profile';
+                    }, 2000);
+                } else {
+                    // Error en registro
+                    if (result.errors) {
+                        // Mostrar errores de validación
+                        showValidationErrors(result.errors);
+                    } else {
+                        showAlert('danger', result.message || 'Error al crear la cuenta');
+                    }
+                }
+            } catch (error) {
+                showAlert('danger', 'Error de conexión. Inténtalo de nuevo.');
+            }
+        });
+        
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            alertContainer.innerHTML = alertHtml;
+        }
+        
+        function showValidationErrors(errors) {
+            const alertContainer = document.getElementById('alertContainer');
+            let errorHtml = '<div class="alert alert-danger" role="alert"><h6>Errores de validación:</h6><ul class="mb-0">';
+            
+            for (const [field, message] of Object.entries(errors)) {
+                errorHtml += `<li>${message}</li>`;
+            }
+            
+            errorHtml += '</ul></div>';
+            alertContainer.innerHTML = errorHtml;
+        }
+        
+        // Validación en tiempo real
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const feedback = this.nextElementSibling.nextElementSibling;
+            
+            if (password.length >= 8) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+                feedback.textContent = 'Contraseña válida';
+                feedback.className = 'valid-feedback';
+            } else {
+                this.classList.remove('is-valid');
+                this.classList.add('is-invalid');
+                feedback.textContent = 'La contraseña debe tener al menos 8 caracteres';
+                feedback.className = 'invalid-feedback';
+            }
+        });
+        
+        // Validación de email
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+        
+        // Animación de entrada
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.register-card');
+            
+            setTimeout(() => {
+                card.classList.add('loaded');
+            }, 100);
+        });
+    </script>
+</body>
+</html>

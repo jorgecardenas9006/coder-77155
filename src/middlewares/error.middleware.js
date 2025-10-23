@@ -82,14 +82,26 @@ export const notFound = (req, res, next) => {
 export const requestLogger = (req, res, next) => {
     const start = Date.now();
     
-    // Log del request
-    console.log(`${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
+    // Filtrar requests de DevTools de Chrome y otros archivos comunes
+    const isFilteredRequest = req.originalUrl.includes('.well-known/appspecific/com.chrome.devtools.json') ||
+                             req.originalUrl === '/favicon.ico' ||
+                             req.originalUrl === '/robots.txt' ||
+                             req.originalUrl === '/sitemap.xml';
+    
+    if (!isFilteredRequest) {
+        // Log del request
+        console.log(`${req.method} ${req.originalUrl} - ${new Date().toISOString()}`);
+    }
     
     // Interceptar el método end para loggear la respuesta
     const originalEnd = res.end;
     res.end = function(chunk, encoding) {
         const duration = Date.now() - start;
-        console.log(`${req.method} ${req.originalUrl} - ${res.statusCode} - ${duration}ms`);
+        
+        if (!isFilteredRequest) {
+            console.log(`${req.method} ${req.originalUrl} - ${res.statusCode} - ${duration}ms`);
+        }
+        
         originalEnd.call(this, chunk, encoding);
     };
     
