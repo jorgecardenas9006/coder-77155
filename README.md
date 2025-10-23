@@ -21,6 +21,8 @@
 - 🗄️ **Base de datos MongoDB** con Mongoose ODM
 - 🐳 **Containerización** con Docker y Docker Compose
 - 📝 **Validación de datos** robusta con Mongoose schemas
+- 🔐 **Sistema de autenticación** con sesiones
+- 🍪 **Manejo de cookies** y sesiones seguras
 - 🔄 **ES Modules** (import/export)
 - 🚀 **Desarrollo** con Nodemon para hot reload
 - 📊 **Modelo de Usuario** completo con validaciones
@@ -163,6 +165,14 @@ docker run -p 3000:3000 --env-file .env coder-77155
 | `GET` | `/api/users` | Obtener todos los usuarios |
 | `POST` | `/api/users` | Crear un nuevo usuario |
 
+#### 🔐 Autenticación
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/login` | Iniciar sesión |
+| `GET` | `/me` | Obtener usuario autenticado |
+| `POST` | `/logout` | Cerrar sesión |
+
 ### Ejemplos de Uso
 
 #### Crear un usuario
@@ -185,6 +195,28 @@ curl -X POST http://localhost:3000/api/users \
 #### Obtener todos los usuarios
 ```bash
 curl http://localhost:3000/api/users
+```
+
+#### Iniciar sesión
+```bash
+curl -X POST http://localhost:3000/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "juan.perez@example.com",
+    "password": "miPassword123"
+  }'
+```
+
+#### Obtener usuario autenticado
+```bash
+curl http://localhost:3000/me \
+  -H "Cookie: connect.sid=tu-session-id"
+```
+
+#### Cerrar sesión
+```bash
+curl -X POST http://localhost:3000/logout \
+  -H "Cookie: connect.sid=tu-session-id"
 ```
 
 ### Modelo de Usuario
@@ -268,6 +300,9 @@ MONGODB_URI=mongodb://localhost:27017/coder-77155
 
 # Para Docker Compose usar:
 # MONGODB_URI=mongodb://mongodb:27017/coder-77155
+
+# Configuración de sesiones
+SESSION_SECRET=tu-clave-secreta-super-segura-aqui
 ```
 
 ### Scripts Disponibles
