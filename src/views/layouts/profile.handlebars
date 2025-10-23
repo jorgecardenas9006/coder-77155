@@ -10,6 +10,12 @@
 </head>
 <body>
     <div class="profile-container">
+        <!-- Elementos decorativos de fondo -->
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
         <!-- Panel izquierdo con información del usuario -->
         <div class="user-panel">
             <div class="user-header">
@@ -142,6 +148,29 @@
         </div>
     </div>
 
+    <!-- Modal de error -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content error-modal-content">
+                <div class="modal-header error-modal-header">
+                    <div class="error-modal-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body error-modal-body">
+                    <p id="errorMessage">Ha ocurrido un error inesperado.</p>
+                </div>
+                <div class="modal-footer error-modal-footer">
+                    <button type="button" class="btn btn-primary error-ok-btn" data-bs-dismiss="modal">
+                        <i class="bi bi-check-circle me-2"></i>Entendido
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de confirmación de logout -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -176,38 +205,88 @@
     
     <script>
         async function confirmLogout() {
+            // Mostrar estado de carga en el botón
+            const logoutBtn = document.querySelector('.logout-confirm-btn');
+            const originalText = logoutBtn.innerHTML;
+            logoutBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Cerrando sesión...';
+            logoutBtn.disabled = true;
+            
+            // Hacer la petición de logout usando la función genérica
+            const data = await makeApiRequest('/api/auth/logout', {
+                method: 'POST'
+            });
+            
+            // Restaurar el botón
+            logoutBtn.innerHTML = originalText;
+            logoutBtn.disabled = false;
+            
+            // Si la petición fue exitosa, redirigir
+            if (data) {
+                window.location.href = '/login';
+            }
+        }
+        
+        // Función para cargar datos del perfil (ejemplo de uso)
+        async function loadProfileData() {
+            const data = await makeApiRequest('/api/auth/profile');
+            if (data) {
+                console.log('Datos del perfil cargados:', data);
+                // Aquí podrías actualizar la UI con los datos
+            }
+        }
+        
+        // Función para actualizar perfil (ejemplo de uso)
+        async function updateProfile(profileData) {
+            const data = await makeApiRequest('/api/auth/profile', {
+                method: 'PUT',
+                body: JSON.stringify(profileData)
+            });
+            if (data) {
+                console.log('Perfil actualizado:', data);
+                // Aquí podrías mostrar un mensaje de éxito
+            }
+        }
+        
+        function showErrorModal(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+        
+        // Función genérica para manejar errores de endpoints
+        async function handleApiError(response, defaultMessage = 'Error desconocido') {
             try {
-                // Mostrar estado de carga en el botón
-                const logoutBtn = document.querySelector('.logout-confirm-btn');
-                const originalText = logoutBtn.innerHTML;
-                logoutBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Cerrando sesión...';
-                logoutBtn.disabled = true;
-                
-                // Hacer la petición de logout
-                const response = await fetch('/api/auth/logout', {
-                    method: 'POST',
+                const data = await response.json();
+                const errorMessage = data.message || data.error || defaultMessage;
+                showErrorModal(errorMessage);
+            } catch (parseError) {
+                // Si no se puede parsear el JSON, mostrar mensaje genérico
+                showErrorModal(defaultMessage);
+            }
+        }
+        
+        // Función para hacer peticiones con manejo de errores
+        async function makeApiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
                     headers: {
                         'Content-Type': 'application/json',
+                        ...options.headers
                     },
+                    ...options
                 });
                 
-                const data = await response.json();
-                
-                if (response.ok) {
-                    // Logout exitoso - redirigir al login
-                    window.location.href = '/login';
-                } else {
-                    // Error en logout
-                    logoutBtn.innerHTML = originalText;
-                    logoutBtn.disabled = false;
-                    alert('Error al cerrar sesión: ' + (data.message || 'Error desconocido'));
+                if (!response.ok) {
+                    await handleApiError(response, 'Error en la petición');
+                    return null;
                 }
+                
+                return await response.json();
             } catch (error) {
-                // Error de conexión
-                const logoutBtn = document.querySelector('.logout-confirm-btn');
-                logoutBtn.innerHTML = '<i class="bi bi-box-arrow-right me-2"></i>Sí, Cerrar Sesión';
-                logoutBtn.disabled = false;
-                alert('Error de conexión. Inténtalo de nuevo.');
+                showErrorModal('Error de conexión. Verifica tu conexión a internet.');
+                return null;
             }
         }
     </script>

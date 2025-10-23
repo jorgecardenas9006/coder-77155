@@ -67,6 +67,25 @@ export const isModerator = (req, res, next) => {
 };
 
 /**
+ * Middleware de autenticación para vistas
+ * Muestra una página de error temporal y redirige al login si no está autenticado
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware function
+ */
+export const isAuthenticatedView = (req, res, next) => {
+    if (!req.session.user) {
+        return res.render('layouts/auth-error', {
+            title: 'Acceso No Autorizado',
+            errorMessage: 'Debes iniciar sesión para acceder a esta página.',
+            redirectUrl: '/login',
+            redirectDelay: 3000
+        });
+    }
+    next();
+};
+
+/**
  * Middleware opcional de autenticación
  * No bloquea la request si no hay usuario, pero agrega información si existe
  * @param {Object} req - Request object

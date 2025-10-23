@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/user.model.js';
 import { isAuthenticated, validateLoginData, validateRegisterData, asyncHandler } from '../middlewares/index.js';
 import { createUserSessionData, createPublicUserData } from '../utils/user.dto.js';
+import { hashPassword, isValidPassword } from '../utils/index.js';
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post('/register', validateRegisterData, asyncHandler(async(req, res) => {
         firstName,
         lastName,
         email,
-        password,
+        password: await hashPassword(password),
         phone,
         dateOfBirth,
         address,
@@ -39,16 +40,13 @@ router.post('/register', validateRegisterData, asyncHandler(async(req, res) => {
 //endpoint de login con validaciones de campos
 router.post('/login', validateLoginData, asyncHandler(async(req, res) => {
     const { email, password } = req.body;
-    
     const user = await User.findOne({ email });
     if(!user) {
         return res.status(400).json({ message: 'User not found' });
     }
-    if(user.password !== password) {
+    if(!isValidPassword(password, user.password)) {
         return res.status(400).json({ message: 'Invalid password' });
     }
-    
-    // Solo almacenar datos esenciales en la sesión
     req.session.user = createUserSessionData(user);
     res.json({ message: 'Login successful' });
 }));

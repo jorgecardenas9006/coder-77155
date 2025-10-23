@@ -4,11 +4,12 @@
  */
 
 // Middlewares de autenticación
-export {
-    isAuthenticated,
-    isAdmin,
-    isModerator,
-    optionalAuth
+export { 
+    isAuthenticated, 
+    isAdmin, 
+    isModerator, 
+    isAuthenticatedView,
+    optionalAuth 
 } from './auth.middleware.js';
 
 // Middlewares de validación

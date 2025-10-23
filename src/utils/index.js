@@ -11,3 +11,4 @@ export { join, __dirname };
 // Re-exportar utilidades específicas
 export { setupGracefulShutdown } from './shutdown.js';
 export { createUserSessionData, createPublicUserData } from './user.dto.js';
+export { hashPassword, isValidPassword } from './password.js';

@@ -14,15 +14,24 @@
 </head>
 <body>
     <div class="register-container">
+        <!-- Elementos decorativos de fondo -->
+        <div class="background-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        
         <div class="register-card">
-            <!-- Sección del formulario (izquierda) -->
-            <div class="register-form-section">
-                <div class="register-form-content">
-                    <!-- Header -->
-                    <div class="register-header">
-                        <h2>Crear Cuenta</h2>
-                        <p>Únete a nuestra comunidad</p>
-                    </div>
+            <div class="register-header">
+                <div class="register-icon-container">
+                    <i class="bi bi-person-plus"></i>
+                    <div class="register-pulse"></div>
+                </div>
+                <h2 class="register-title">Crear Cuenta</h2>
+                <p class="register-subtitle">Regístrate para acceder a todas las funciones</p>
+            </div>
+            
+            <div class="register-form-content">
                             <!-- Alert para errores -->
                             <div id="alertContainer"></div>
                             
@@ -44,20 +53,22 @@
                                     </div>
                                 </div>
                                 
-                                <div class="form-floating mb-3">
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-                                    <label for="email">
-                                        <i class="bi bi-envelope me-2"></i>Email
-                                    </label>
+                                <div class="form-row mb-3">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                        <label for="email">
+                                            <i class="bi bi-envelope me-2"></i>Email
+                                        </label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
+                                        <label for="password">
+                                            <i class="bi bi-lock me-2"></i>Contraseña
+                                        </label>
+                                    </div>
                                 </div>
                                 
-                                <div class="form-floating mb-3">
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" required minlength="8">
-                                    <label for="password">
-                                        <i class="bi bi-lock me-2"></i>Contraseña
-                                    </label>
-                                    <div class="form-text">Mínimo 8 caracteres</div>
-                                </div>
+                                <div class="form-text mb-3">Mínimo 8 caracteres para la contraseña</div>
                                 
                                 <!-- Campos opcionales -->
                                 <div class="form-row mb-3">
@@ -75,18 +86,19 @@
                                     </div>
                                 </div>
                                 
-                                <div class="form-floating mb-3 optional-field">
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Dirección">
-                                    <label for="address">
-                                        <i class="bi bi-geo-alt me-2"></i>Dirección
-                                    </label>
-                                </div>
-                                
-                                <div class="form-floating mb-3 optional-field">
-                                    <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad">
-                                    <label for="city">
-                                        <i class="bi bi-building me-2"></i>Ciudad
-                                    </label>
+                                <div class="form-row mb-3">
+                                    <div class="form-floating optional-field">
+                                        <input type="text" class="form-control" id="address" name="address" placeholder="Dirección">
+                                        <label for="address">
+                                            <i class="bi bi-geo-alt me-2"></i>Dirección
+                                        </label>
+                                    </div>
+                                    <div class="form-floating optional-field">
+                                        <input type="text" class="form-control" id="city" name="city" placeholder="Ciudad">
+                                        <label for="city">
+                                            <i class="bi bi-building me-2"></i>Ciudad
+                                        </label>
+                                    </div>
                                 </div>
                                 
                                 <!-- Términos y condiciones -->
@@ -129,24 +141,47 @@
                 </div>
             </div>
             
-            <!-- Sección de imagen (derecha) -->
-            <div class="register-image-section">
-                <div class="register-image-content">
-                    <i class="bi bi-people-fill"></i>
-                    <h3>¡Bienvenido!</h3>
-                    <p>Únete a miles de usuarios que ya confían en nuestra plataforma. Crea tu cuenta y comienza a disfrutar de todos nuestros servicios.</p>
+            <!-- Sección de bienvenida (derecha) -->
+            <div class="register-welcome-section">
+                <div class="welcome-content">
+                    <div class="welcome-icon-container">
+                        <i class="bi bi-people-fill"></i>
+                        <div class="welcome-pulse"></div>
+                    </div>
                     
-                    <div class="feature">
-                        <i class="bi bi-shield-check"></i>
-                        <span>Datos seguros y protegidos</span>
-                    </div>
-                    <div class="feature">
-                        <i class="bi bi-lightning"></i>
-                        <span>Acceso instantáneo</span>
-                    </div>
-                    <div class="feature">
-                        <i class="bi bi-heart"></i>
-                        <span>Experiencia personalizada</span>
+                    <h3 class="welcome-title">¡Bienvenido!</h3>
+                    <p class="welcome-subtitle">Únete a miles de usuarios que ya confían en nuestra plataforma. Crea tu cuenta y comienza a disfrutar de todos nuestros servicios.</p>
+                    
+                    <div class="features-container">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h6>Datos seguros y protegidos</h6>
+                                <p>Tu información está protegida con los más altos estándares de seguridad</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="bi bi-lightning"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h6>Acceso instantáneo</h6>
+                                <p>Comienza a usar nuestros servicios inmediatamente después del registro</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h6>Experiencia personalizada</h6>
+                                <p>Disfruta de una experiencia adaptada a tus necesidades y preferencias</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

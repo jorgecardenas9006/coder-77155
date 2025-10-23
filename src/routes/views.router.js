@@ -1,5 +1,5 @@
 import express from 'express';
-import { isAuthenticated } from '../middlewares/index.js';
+import { isAuthenticatedView } from '../middlewares/index.js';
 
 const router = express.Router();
 
@@ -10,10 +10,10 @@ router.get('/', (req, res) => {
 
 //ruta de login
 router.get('/login', (req, res) => {
-    res.render('layouts/login', { title: 'Login' });
     if (req.session.user) {
-        res.redirect('/profile');
+        return res.redirect('/profile');
     }
+    res.render('layouts/login', { title: 'Login' });
 });
 
 //ruta de register
@@ -22,7 +22,7 @@ router.get('/register', (req, res) => {
 });
 
 //ruta de profile
-router.get('/profile', isAuthenticated, (req, res) => {
+router.get('/profile', isAuthenticatedView, (req, res) => {
     res.render('layouts/profile', { 
         title: 'Profile',
         user: req.session.user 
