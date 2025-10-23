@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { errorHandler, notFound, requestLogger } from './middlewares/index.js';
 import MongoStore from 'connect-mongo';
+import handlebars from 'express-handlebars';
+import { join, __dirname, setupGracefulShutdown } from './utils/index.js';
 
 
 // variables de entorno
@@ -14,12 +16,20 @@ const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGODB_URI;
 const SECRET = process.env.SECRET;
 
+// Configuración de handlebars
+app.engine('handlebars', handlebars.engine());
+app.set('view engine', 'handlebars');
+app.set('views', join(__dirname, 'views'));
+
 // Middleware global para logging de requests
 app.use(requestLogger);
 
 // Middleware para parsear el body de las peticiones
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware para servir archivos estáticos
+app.use(express.static(join(__dirname, '..', 'public')));
 
 // Middleware para manejar las cookies
 app.use(cookieParser(SECRET));
@@ -42,6 +52,11 @@ app.use('/api/users', usersRouter);
 // ruta de autenticación
 app.use('/api/auth', authRouter);
 
+// ruta de home
+app.get('/', (req, res) => {
+    res.render('home', { title: 'Home' });
+});
+
 // Configuración de mongoose
 mongoose.connect(MONGO_URI)
     .then(() => {
@@ -57,8 +72,12 @@ app.use(notFound);
 // Middleware global para manejo de errores (debe ir al final)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+// Graceful shutdown - manejo adecuado de eventos de cierre
+const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// Configurar el manejo de cierre graceful
+setupGracefulShutdown(server, mongoose);
 
 export default app;
