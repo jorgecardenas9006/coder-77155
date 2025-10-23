@@ -5,12 +5,14 @@ import authRouter from './routes/auth.router.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import { errorHandler, notFound, requestLogger } from './middlewares/index.js';
+import MongoStore from 'connect-mongo';
 
 
 // variables de entorno
 const app = express();
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGODB_URI;
+const SECRET = process.env.SECRET;
 
 // Middleware global para logging de requests
 app.use(requestLogger);
@@ -20,15 +22,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Middleware para manejar las cookies
-app.use(cookieParser("secret"));
+app.use(cookieParser(SECRET));
 
-// Middleware para las sesiones
+// Guardar la sesión en la base de datos mongo DB con connect-mongo
 app.use(session({
-    secret: process.env.SESSION_SECRET,
+    secret: SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false }
+    store: MongoStore.create({
+        mongoUrl: MONGO_URI,
+        ttl: 240
+    })
 }));
+
 
 // ruta para los usuarios
 app.use('/api/users', usersRouter);
