@@ -34,6 +34,39 @@
                         
                         <!-- Body -->
                         <div class="login-body">
+                            <!-- Flash Messages -->
+                            {{#if success_msg}}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    {{success_msg}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {{/if}}
+                            
+                            {{#if error_msg}}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    {{error_msg}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {{/if}}
+                            
+                            {{#if warning_msg}}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    {{warning_msg}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {{/if}}
+                            
+                            {{#if info_msg}}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    {{info_msg}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {{/if}}
+                            
                             <!-- Alert para errores -->
                             <div id="alertContainer"></div>
                             
@@ -72,6 +105,19 @@
                                     </button>
                                 </div>
                             </form>
+                            
+                            <!-- Divider -->
+                            <div class="divider">
+                                <span>o</span>
+                            </div>
+                            
+                            <!-- Botón de GitHub -->
+                            <div class="d-grid mb-3">
+                                <a href="/api/auth/github" class="btn btn-dark btn-github">
+                                    <i class="bi bi-github me-2"></i>
+                                    Continuar con GitHub
+                                </a>
+                            </div>
                             
                             <!-- Divider -->
                             <div class="divider">

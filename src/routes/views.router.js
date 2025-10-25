@@ -49,5 +49,13 @@ router.get('/recovery-password', (req, res) => {
     res.render('layouts/recover', { title: 'Recovery Password' });
 });
 
+//ruta de error OAuth
+router.get('/oauth-error', (req, res) => {
+    const errorMessage = req.flash('error')[0] || 'Error desconocido durante la autenticación';
+    res.render('layouts/oauth-error', {
+        title: 'Error de Autenticación',
+        errorMessage: errorMessage
+    });
+});
 
 export default router;

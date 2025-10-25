@@ -31,3 +31,10 @@ export {
     requestLogger,
     asyncHandler
 } from './error.middleware.js';
+
+// Middlewares de OAuth
+export {
+    handlePassportError,
+    handleGitHubError,
+    logOAuthError
+} from './oauth.middleware.js';

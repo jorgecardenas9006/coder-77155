@@ -2,6 +2,7 @@ import express from "express";
 import { join, __dirname } from "./utils/index.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import flash from "connect-flash";
 import usersRouter from './routes/users.router.js';
 import authRouter from './routes/auth.router.js'
 import viewsRouter from './routes/views.router.js';
@@ -58,6 +59,19 @@ app.use(
     saveUninitialized: false,
   })
 );
+
+// Configurar flash messages
+app.use(flash());
+
+// Middleware para hacer flash messages disponibles en vistas
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success');
+  res.locals.error_msg = req.flash('error');
+  res.locals.warning_msg = req.flash('warning');
+  res.locals.info_msg = req.flash('info');
+  next();
+});
+
 initializePassport();
 app.use(passport.initialize());
 app.use(passport.session());

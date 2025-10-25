@@ -1,6 +1,6 @@
 import express from 'express'
 import passport from 'passport';
-import { validateLoginData, validateRegisterData, asyncHandler, isAuthenticated } from '../middlewares/index.js';
+import { validateLoginData, validateRegisterData, asyncHandler, isAuthenticated, handlePassportError, handleGitHubError, logOAuthError } from '../middlewares/index.js';
 
 const router = express.Router();
 
@@ -70,5 +70,36 @@ router.post('/logout', isAuthenticated, asyncHandler(async(req, res) => {
         res.json({ message: 'Logout successful' });
     });
 }));
+
+router.get("/github", passport.authenticate("github",{scope:["user:email"]}))
+
+// Callback de GitHub con manejo de errores mejorado
+router.get("/githubcallback", 
+  logOAuthError,
+  handleGitHubError,
+  handlePassportError,
+  passport.authenticate("github", { failureRedirect: "/oauth-error" }), 
+  asyncHandler((req, res) => {
+    // Estructurar req.session.user como en login/register para consistencia
+    req.session.user = {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email,
+      phone: req.user.phone,
+      role: req.user.role,
+      avatar: req.user.avatar,
+      dateOfBirth: req.user.dateOfBirth,
+      address: req.user.address,
+      city: req.user.city,
+      isActive: req.user.isActive,
+      isEmailVerified: req.user.isEmailVerified,
+      preferences: req.user.preferences
+    };
+    
+    console.log('GitHub login successful for:', req.user.email);
+    req.flash('success', '¡Autenticación con GitHub exitosa!');
+    res.redirect("/profile");
+  })
+)
 
 export default router;

@@ -2,6 +2,13 @@ import mongoose from 'mongoose';
 
 // Schema básico para el modelo User
 const userSchema = new mongoose.Schema({
+    // githubId para registro con github
+    githubId:{
+        type: String,
+        required: false,
+        unique: true,
+        sparse: true
+    },
     // Información personal básica
     firstName: {
         type: String,
@@ -42,7 +49,10 @@ const userSchema = new mongoose.Schema({
     // Autenticación básica
     password: {
         type: String,
-        required: [true, 'La contraseña es obligatoria'],
+        required: function() {
+            // Solo requerido si NO es OAuth (no tiene githubId)
+            return !this.githubId;
+        },
         minlength: [8, 'La contraseña debe tener al menos 8 caracteres']
     },
     
