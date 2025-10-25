@@ -1,46 +1,74 @@
 import express from 'express'
 import passport from 'passport';
+import { validateLoginData, validateRegisterData, asyncHandler, isAuthenticated } from '../middlewares/index.js';
 
 const router = express.Router();
 
-router.post('/register', passport.authenticate('register',{failureRedirect: '/failregister'}), async (req, res) =>{
+router.post('/register', passport.authenticate('register',{failureRedirect: '/failregister'}), validateRegisterData, asyncHandler ((req, res) =>{
   if (!req.user) return res.status(400).send({ status: "error", error: "Error en el registro"})
   
-  // ✅ Agregar datos adicionales en la sesión (igual que en login)
   req.session.user = {
-    first_name: req.user.firstName,
-    last_name: req.user.lastName,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    email: req.user.email,
+    phone: req.user.phone,
     role: req.user.role,
     avatar: req.user.avatar,
-    fecha_nacimiento: req.user.dateOfBirth,
-    direccion: req.user.address,
-    ciudad: req.user.city
+    dateOfBirth: req.user.dateOfBirth,
+    address: req.user.address,
+    city: req.user.city,
+    isActive: req.user.isActive,
+    isEmailVerified: req.user.isEmailVerified,
+    preferences: req.user.preferences
   }
   
   res.send({ status: "success", message: "usuario registrado"})
-})
+}));
 
 router.get('/failregister', async (req, res) =>{
   console.log('Error en la estrategia')
   res.send({ error: "failed"})
 })
 
-router.post('/login', passport.authenticate('login', {failureRedirect: '/faillogin'}), async (req, res) =>{
+router.post('/login', passport.authenticate('login', {failureRedirect: '/faillogin'}), validateLoginData, asyncHandler((req, res) =>{
   if (!req.user) return res.status(400).send({ status: "error", error: "credenciales invalidas"})
   req.session.user = {
-    first_name: req.user.firstName,
-    last_name: req.user.lastName,
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    email: req.user.email,
+    phone: req.user.phone,
     role: req.user.role,
     avatar: req.user.avatar,
-    fecha_nacimiento: req.user.dateOfBirth,
-    direccion: req.user.address,
-    ciudad: req.user.city
+    dateOfBirth: req.user.dateOfBirth,
+    address: req.user.address,
+    city: req.user.city,
+    isActive: req.user.isActive,
+    isEmailVerified: req.user.isEmailVerified,
+    preferences: req.user.preferences
   } 
   res.send({status: "success"})
-})
+}));
 
 router.get('/faillogin', (req, res) =>{
   res.send("login fallido")
 })
+
+//endpoint para obtener el perfil del usuario
+router.get('/profile', isAuthenticated, asyncHandler(async(req, res) => {
+    res.json({
+        status: "success",
+        user: req.session.user
+    });
+}));
+
+//endpoint para deslogear al usuario
+router.post('/logout', isAuthenticated, asyncHandler(async(req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error during logout' });
+        }
+        res.json({ message: 'Logout successful' });
+    });
+}));
 
 export default router;
