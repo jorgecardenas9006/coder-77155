@@ -1,15 +1,17 @@
-# 🚀 Coder-77155 - Backend API
+# 🚀 Coder-77155 - Sistema de Autenticación Completo
 
 <div align="center">
 
 ![Node.js](https://img.shields.io/badge/Node.js-22-green?style=for-the-badge&logo=node.js)
 ![Express](https://img.shields.io/badge/Express-5.1.0-black?style=for-the-badge&logo=express)
 ![MongoDB](https://img.shields.io/badge/MongoDB-7.0.2-green?style=for-the-badge&logo=mongodb)
+![Passport](https://img.shields.io/badge/Passport.js-0.7.0-blue?style=for-the-badge&logo=passport)
+![Handlebars](https://img.shields.io/badge/Handlebars-7.1.2-orange?style=for-the-badge&logo=handlebarsjs)
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge&logo=docker)
 
-**Una API REST moderna construida con Node.js, Express y MongoDB**
+**Sistema completo de autenticación con Node.js, Express, MongoDB y Passport.js**
 
-[📋 Características](#-características) • [🚀 Instalación](#-instalación) • [🐳 Docker](#-docker) • [📚 API](#-api) • [🏗️ Arquitectura](#️-arquitectura)
+[📋 Características](#-características) • [🚀 Instalación](#-instalación) • [🔐 Autenticación](#-autenticación) • [📚 API](#-api) • [🏗️ Arquitectura](#️-arquitectura) • [🐳 Docker](#-docker)
 
 </div>
 
@@ -17,14 +19,39 @@
 
 ## 📋 Características
 
-- ✅ **API REST** completa con Express.js
-- 🗄️ **Base de datos MongoDB** con Mongoose ODM
-- 🐳 **Containerización** con Docker y Docker Compose
-- 📝 **Validación de datos** robusta con Mongoose schemas
-- 🔄 **ES Modules** (import/export)
-- 🚀 **Desarrollo** con Nodemon para hot reload
-- 📊 **Modelo de Usuario** completo con validaciones
-- 🌐 **Variables de entorno** para configuración
+### 🔐 **Sistema de Autenticación Completo**
+- ✅ **Registro y Login** con email y contraseña
+- ✅ **Autenticación OAuth** con GitHub
+- ✅ **Gestión de sesiones** con express-session y MongoDB
+- ✅ **Control de acceso** basado en roles (user, admin, moderator)
+- ✅ **Flash messages** para notificaciones elegantes
+- ✅ **Manejo robusto de errores** con vistas personalizadas
+
+### 🎨 **Interfaz de Usuario**
+- ✅ **Vistas Handlebars** responsivas y modernas
+- ✅ **Diseño profesional** con Bootstrap 5.3
+- ✅ **Animaciones suaves** y efectos visuales
+- ✅ **Vista de administración** para gestión de usuarios
+- ✅ **Panel de moderación** para roles especiales
+- ✅ **Manejo de errores** con páginas personalizadas
+
+### 🛡️ **Seguridad y Validación**
+- ✅ **Validación robusta** con Mongoose schemas
+- ✅ **Hashing de contraseñas** con bcrypt
+- ✅ **Middleware de autenticación** personalizado
+- ✅ **Protección de rutas** por roles
+- ✅ **Sanitización de datos** de entrada
+- ✅ **Manejo seguro de sesiones**
+
+### 🏗️ **Arquitectura Moderna**
+- ✅ **ES Modules** (import/export)
+- ✅ **Arquitectura MVC** bien estructurada
+- ✅ **Middleware modular** y reutilizable
+- ✅ **Configuración centralizada**
+- ✅ **Logging estructurado**
+- ✅ **Manejo de errores centralizado**
+
+---
 
 ## 🚀 Instalación
 
@@ -33,6 +60,7 @@
 - [Node.js](https://nodejs.org/) (versión 22 o superior)
 - [npm](https://www.npmjs.com/) o [yarn](https://yarnpkg.com/)
 - [MongoDB](https://www.mongodb.com/) (local o Atlas)
+- [GitHub OAuth App](https://github.com/settings/applications/new) (opcional)
 
 ### Instalación Local
 
@@ -54,8 +82,18 @@
    
    Edita el archivo `.env` con tus configuraciones:
    ```env
+   # Servidor
    PORT=3000
+   
+   # Base de datos
    MONGODB_URI=mongodb://localhost:27017/coder-77155
+   
+   # Seguridad
+   SECRET=tu-clave-secreta-super-segura
+   
+   # GitHub OAuth (opcional)
+   GITHUB_CLIENT_ID=tu_client_id_de_github
+   GITHUB_CLIENT_SECRET=tu_client_secret_de_github
    ```
 
 4. **Inicia MongoDB** (si usas instalación local)
@@ -79,19 +117,244 @@
    npm start
    ```
 
+6. **Accede a la aplicación**
+   - **Frontend**: http://localhost:3000
+   - **API**: http://localhost:3000/api
+
+---
+
+## 🔐 Autenticación
+
+### Métodos de Autenticación Disponibles
+
+#### 1. **Registro Tradicional**
+- Email y contraseña
+- Validación completa de datos
+- Hash seguro de contraseñas
+- Verificación de email único
+
+#### 2. **Login Tradicional**
+- Autenticación con email/contraseña
+- Gestión de sesiones
+- Redirección automática según rol
+
+#### 3. **Autenticación OAuth con GitHub**
+- Login con cuenta de GitHub
+- Obtención automática de datos de perfil
+- Vinculación con cuentas existentes
+- Manejo de errores específicos
+
+### Flujo de Autenticación
+
+```mermaid
+graph TD
+    A[Usuario] --> B{¿Tiene cuenta?}
+    B -->|No| C[Registro]
+    B -->|Sí| D[Login]
+    C --> E[Validación de datos]
+    E --> F[Crear usuario]
+    F --> G[Sesión iniciada]
+    D --> H[Verificar credenciales]
+    H --> I{¿Válidas?}
+    I -->|Sí| G
+    I -->|No| J[Error de login]
+    G --> K[Redirección según rol]
+    K --> L[Admin: /users]
+    K --> M[User: /profile]
+    K --> N[Moderator: /moderation]
+```
+
+### Roles y Permisos
+
+| Rol | Permisos | Acceso |
+|-----|----------|--------|
+| **user** | Básico | `/profile` |
+| **moderator** | Moderación | `/profile`, `/moderation` |
+| **admin** | Completo | `/profile`, `/moderation`, `/users` |
+
+---
+
+## 📚 API
+
+### Endpoints de Autenticación
+
+#### 🔐 **Autenticación**
+
+| Método | Endpoint | Descripción | Autenticación |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/auth/register` | Registrar nuevo usuario | ❌ |
+| `POST` | `/api/auth/login` | Iniciar sesión | ❌ |
+| `GET` | `/api/auth/profile` | Obtener perfil actual | ✅ |
+| `POST` | `/api/auth/logout` | Cerrar sesión | ✅ |
+| `GET` | `/api/auth/github` | Iniciar OAuth GitHub | ❌ |
+| `GET` | `/api/auth/githubcallback` | Callback OAuth GitHub | ❌ |
+
+#### 👥 **Usuarios**
+
+| Método | Endpoint | Descripción | Autenticación | Rol |
+|--------|----------|-------------|---------------|-----|
+| `GET` | `/api/users` | Obtener todos los usuarios | ✅ | admin |
+| `POST` | `/api/users` | Crear nuevo usuario | ❌ | - |
+| `DELETE` | `/api/users/:id` | Eliminar usuario | ✅ | admin |
+
+### Ejemplos de Uso
+
+#### 🔐 **Registro de Usuario**
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "email": "juan.perez@example.com",
+    "password": "miPassword123",
+    "phone": "+5491123456789",
+    "role": "user",
+    "dateOfBirth": "1990-05-15",
+    "address": "Av. Corrientes 1234",
+    "city": "Buenos Aires"
+  }'
+```
+
+#### 🔐 **Login de Usuario**
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "juan.perez@example.com",
+    "password": "miPassword123"
+  }'
+```
+
+#### 👥 **Obtener Usuarios (Admin)**
+```bash
+curl -X GET http://localhost:3000/api/users \
+  -H "Cookie: connect.sid=tu_session_id"
+```
+
+#### 👥 **Crear Usuario Admin**
+```bash
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Admin",
+    "lastName": "Sistema",
+    "email": "admin@sistema.com",
+    "password": "adminPassword123",
+    "role": "admin",
+    "phone": "+5491123456789"
+  }'
+```
+
+### Respuestas de la API
+
+#### ✅ **Éxito**
+```json
+{
+  "status": "success",
+  "message": "Usuario registrado correctamente"
+}
+```
+
+#### ❌ **Error**
+```json
+{
+  "status": "error",
+  "message": "El email ya está en uso",
+  "code": "EMAIL_EXISTS"
+}
+```
+
+---
+
+## 🏗️ Arquitectura
+
+### Estructura del Proyecto
+
+```
+src/
+├── app.js                      # Punto de entrada principal
+├── config/                     # Configuración centralizada
+│   ├── index.js               # Exportaciones centralizadas
+│   ├── env.js                 # Variables de entorno
+│   ├── db.js                  # Conexión a MongoDB
+│   └── passport.config.js     # Configuración de Passport
+├── models/                    # Modelos de datos
+│   └── user.model.js         # Modelo de Usuario
+├── routes/                    # Rutas de la aplicación
+│   ├── auth.router.js         # Rutas de autenticación
+│   ├── users.router.js        # Rutas de usuarios
+│   └── views.router.js        # Rutas de vistas
+├── middlewares/               # Middlewares personalizados
+│   ├── index.js              # Exportaciones centralizadas
+│   ├── auth.middleware.js    # Middlewares de autenticación
+│   ├── validation.middleware.js # Middlewares de validación
+│   ├── error.middleware.js   # Middlewares de errores
+│   └── oauth.middleware.js   # Middlewares de OAuth
+├── utils/                     # Utilidades
+│   ├── index.js              # Utilidades generales
+│   └── pass.js               # Utilidades de contraseñas
+└── views/                    # Vistas Handlebars
+    ├── layouts/              # Layouts principales
+    │   ├── login.handlebars  # Vista de login
+    │   ├── register.handlebars # Vista de registro
+    │   ├── profile.handlebars # Vista de perfil
+    │   ├── users.handlebars  # Vista de usuarios (admin)
+    │   ├── moderation.handlebars # Vista de moderación
+    │   ├── oauth-error.handlebars # Vista de error OAuth
+    │   └── role-error.handlebars # Vista de error de roles
+    └── home.handlebars       # Vista de inicio
+```
+
+### Componentes Principales
+
+#### **🔧 Configuración (`config/`)**
+- **`env.js`**: Variables de entorno con valores por defecto
+- **`db.js`**: Conexión a MongoDB con manejo de errores
+- **`passport.config.js`**: Estrategias de autenticación (Local + GitHub)
+- **`index.js`**: Exportaciones centralizadas
+
+#### **🛡️ Middlewares (`middlewares/`)**
+- **`auth.middleware.js`**: Autenticación y autorización por roles
+- **`validation.middleware.js`**: Validación de datos de entrada
+- **`error.middleware.js`**: Manejo centralizado de errores
+- **`oauth.middleware.js`**: Manejo específico de errores OAuth
+
+#### **🎨 Vistas (`views/`)**
+- **Diseño responsivo** con Bootstrap 5.3
+- **Animaciones suaves** y efectos visuales
+- **Flash messages** integrados
+- **Control de acceso** por roles
+
+### Flujo de Datos
+
+```mermaid
+graph LR
+    A[Cliente] --> B[Express Router]
+    B --> C[Middleware Stack]
+    C --> D[Passport Auth]
+    D --> E[Controller]
+    E --> F[Model]
+    F --> G[MongoDB]
+    G --> F
+    F --> E
+    E --> H[Response]
+    H --> A
+```
+
+---
+
 ## 🐳 Docker
 
 ### Despliegue con Docker Compose (Recomendado)
 
-Esta es la forma más fácil de ejecutar toda la aplicación:
-
 1. **Clona y navega al proyecto**
    ```bash
-   git clone git@github.com-personal:jorgecardenas9006/coder-77155.git
+   git clone git@github.com:jorgecardenas9006/coder-77155.git
    cd coder-77155
    ```
 
-2. **Crea el archivo de variables de entorno**
+2. **Configura las variables de entorno**
    ```bash
    cp .env.example .env
    ```
@@ -100,6 +363,9 @@ Esta es la forma más fácil de ejecutar toda la aplicación:
    ```env
    PORT=3000
    MONGODB_URI=mongodb://mongodb:27017/coder-77155
+   SECRET=tu-clave-secreta-super-segura
+   GITHUB_CLIENT_ID=tu_client_id
+   GITHUB_CLIENT_SECRET=tu_client_secret
    ```
 
 3. **Ejecuta con Docker Compose**
@@ -120,7 +386,7 @@ Esta es la forma más fácil de ejecutar toda la aplicación:
    docker-compose ps
    ```
 
-### Comandos Docker útiles
+### Comandos Docker Útiles
 
 ```bash
 # Detener todos los servicios
@@ -140,197 +406,231 @@ docker-compose logs -f app
 docker-compose logs -f mongodb
 ```
 
-### Despliegue Individual con Docker
+---
 
-Si prefieres ejecutar solo la aplicación con Docker:
+## 🔧 Configuración Avanzada
 
-```bash
-# Construir la imagen
-docker build -t coder-77155 .
-
-# Ejecutar el contenedor
-docker run -p 3000:3000 --env-file .env coder-77155
-```
-
-## 📚 API
-
-### Endpoints Disponibles
-
-#### 👥 Usuarios
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| `GET` | `/api/users` | Obtener todos los usuarios |
-| `POST` | `/api/users` | Crear un nuevo usuario |
-
-### Ejemplos de Uso
-
-#### Crear un usuario
-```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstName": "Juan",
-    "lastName": "Pérez",
-    "email": "juan.perez@example.com",
-    "password": "miPassword123",
-    "phone": "+5491123456789",
-    "role": "user",
-    "dateOfBirth": "1990-05-15",
-    "address": "Av. Corrientes 1234",
-    "city": "Buenos Aires"
-  }'
-```
-
-#### Obtener todos los usuarios
-```bash
-curl http://localhost:3000/api/users
-```
-
-### Modelo de Usuario
-
-El modelo de usuario incluye los siguientes campos:
-
-```javascript
-{
-  // Información personal
-  firstName: String (requerido, 2-50 caracteres),
-  lastName: String (requerido, 2-50 caracteres),
-  email: String (requerido, único, formato email),
-  phone: String (opcional, formato internacional),
-  password: String (requerido, mínimo 8 caracteres),
-  
-  // Estado y roles
-  role: String (enum: 'user', 'admin', 'moderator', default: 'user'),
-  isActive: Boolean (default: true),
-  isEmailVerified: Boolean (default: false),
-  
-  // Perfil
-  avatar: String (opcional),
-  dateOfBirth: Date (opcional, debe ser anterior a hoy),
-  address: String (opcional, máximo 200 caracteres),
-  city: String (opcional, máximo 50 caracteres),
-  
-  // Configuraciones
-  preferences: {
-    language: String (enum: 'es', 'en', 'pt', default: 'es'),
-    timezone: String (default: 'America/Argentina/Buenos_Aires'),
-    notifications: {
-      email: Boolean (default: true),
-      push: Boolean (default: true),
-      sms: Boolean (default: false)
-    }
-  },
-  
-  // Timestamps automáticos
-  createdAt: Date,
-  updatedAt: Date,
-  lastLogin: Date (opcional)
-}
-```
-
-### Campos Virtuales
-
-- **`fullName`**: Combina firstName y lastName
-- **`age`**: Calcula la edad basada en dateOfBirth
-
-## 🏗️ Arquitectura
-
-```
-src/
-├── app.js                 # Punto de entrada de la aplicación
-├── models/
-│   └── user.model.js      # Modelo de Usuario con Mongoose
-└── routes/
-    └── users.router.js     # Rutas para usuarios
-```
-
-### Estructura del Proyecto
-
-- **`app.js`**: Configuración principal de Express, middleware y conexión a MongoDB
-- **`models/user.model.js`**: Schema de Mongoose con validaciones completas
-- **`routes/users.router.js`**: Controladores para operaciones CRUD de usuarios
-- **`Dockerfile`**: Configuración para containerización
-- **`docker-compose.yml`**: Orquestación de servicios (app + MongoDB)
-
-## 🔧 Configuración
-
-### Variables de Entorno
-
-Crea un archivo `.env` en la raíz del proyecto:
+### Variables de Entorno Completas
 
 ```env
-# Puerto del servidor
+# Servidor
 PORT=3000
 
-# URI de conexión a MongoDB
+# Base de datos
 MONGODB_URI=mongodb://localhost:27017/coder-77155
 
-# Para Docker Compose usar:
+# Seguridad
+SECRET=tu-clave-secreta-super-segura-minimo-32-caracteres
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=tu_client_id_de_github
+GITHUB_CLIENT_SECRET=tu_client_secret_de_github
+
+# Para Docker Compose
 # MONGODB_URI=mongodb://mongodb:27017/coder-77155
 ```
+
+### Configuración de GitHub OAuth
+
+1. **Ve a GitHub Settings > Developer settings > OAuth Apps**
+2. **Crea una nueva OAuth App** con:
+   - **Application name**: Tu aplicación
+   - **Homepage URL**: http://localhost:3000
+   - **Authorization callback URL**: http://localhost:3000/api/auth/githubcallback
+3. **Copia el Client ID y Client Secret** a tu archivo `.env`
 
 ### Scripts Disponibles
 
 ```bash
-npm run dev    # Ejecuta con Nodemon (desarrollo)
-npm start      # Ejecuta en modo producción
+npm run dev      # Ejecuta con Nodemon (desarrollo)
+npm start        # Ejecuta en modo producción
+npm test         # Ejecuta tests (próximamente)
+npm run build    # Construye para producción (próximamente)
 ```
+
+---
+
+## 🛡️ Seguridad
+
+### Medidas de Seguridad Implementadas
+
+- ✅ **Hashing de contraseñas** con bcrypt
+- ✅ **Sesiones seguras** con express-session
+- ✅ **Validación de entrada** con Mongoose
+- ✅ **Sanitización de datos** automática
+- ✅ **Control de acceso** basado en roles
+- ✅ **Manejo seguro de errores** sin exposición de datos
+- ✅ **Variables de entorno** para datos sensibles
+- ✅ **Middleware de autenticación** robusto
+
+### Mejores Prácticas
+
+- 🔒 **Nunca** expongas contraseñas en respuestas
+- 🔒 **Usa HTTPS** en producción
+- 🔒 **Valida** todos los datos de entrada
+- 🔒 **Implementa** rate limiting (próximamente)
+- 🔒 **Usa** claves secretas fuertes
+- 🔒 **Mantén** las dependencias actualizadas
+
+---
 
 ## 🚀 Despliegue en Producción
 
-### Con Docker Compose
+### Preparación para Producción
 
-1. **Configura las variables de entorno de producción**
+1. **Configura variables de entorno de producción**
    ```env
    PORT=3000
    MONGODB_URI=mongodb://tu-servidor-mongodb:27017/coder-77155-prod
+   SECRET=clave-super-secreta-de-produccion-minimo-64-caracteres
+   NODE_ENV=production
    ```
 
-2. **Ejecuta en producción**
+2. **Optimiza la aplicación**
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d
+   # Instala solo dependencias de producción
+   npm ci --only=production
+   
+   # Construye la aplicación
+   npm run build
    ```
 
-### Con Docker Swarm o Kubernetes
+3. **Configura el servidor web** (Nginx recomendado)
+   ```nginx
+   server {
+       listen 80;
+       server_name tu-dominio.com;
+       
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
 
-El proyecto está preparado para escalabilidad horizontal. Considera:
+### Con Docker en Producción
 
-- Usar un MongoDB cluster para alta disponibilidad
-- Implementar load balancers
-- Configurar health checks
-- Usar secrets para variables sensibles
+```bash
+# Usar docker-compose.prod.yml
+docker-compose -f docker-compose.prod.yml up -d
+```
 
-## 🛠️ Desarrollo
+---
 
-### Mejores Prácticas Implementadas
+## 🧪 Testing
 
-- ✅ **Validación de datos** con Mongoose schemas
-- ✅ **Manejo de errores** centralizado
-- ✅ **Variables de entorno** para configuración
-- ✅ **Containerización** con Docker
-- ✅ **ES Modules** para modularidad
-- ✅ **Documentación** JSDoc en modelos
-- ✅ **Campos virtuales** para datos calculados
-- ✅ **Timestamps automáticos** con Mongoose
+### Próximas Implementaciones
 
-### Próximas Mejoras Sugeridas
+- [ ] **Tests unitarios** con Jest
+- [ ] **Tests de integración** con Supertest
+- [ ] **Tests de autenticación** OAuth
+- [ ] **Tests de middleware** de autorización
+- [ ] **Tests de validación** de datos
+- [ ] **Coverage reports** con Istanbul
 
-- [ ] Implementar autenticación JWT
-- [ ] Agregar middleware de logging
-- [ ] Implementar rate limiting
-- [ ] Agregar tests unitarios e integración
-- [ ] Configurar CI/CD pipeline
-- [ ] Implementar paginación en endpoints
-- [ ] Agregar documentación con Swagger/OpenAPI
+### Estructura de Tests Propuesta
+
+```
+tests/
+├── unit/                    # Tests unitarios
+│   ├── models/             # Tests de modelos
+│   ├── middlewares/        # Tests de middlewares
+│   └── utils/              # Tests de utilidades
+├── integration/            # Tests de integración
+│   ├── auth/               # Tests de autenticación
+│   ├── users/              # Tests de usuarios
+│   └── oauth/              # Tests de OAuth
+└── e2e/                    # Tests end-to-end
+    └── workflows/          # Flujos completos
+```
+
+---
+
+## 📈 Monitoreo y Logging
+
+### Logging Implementado
+
+- ✅ **Request logging** con middleware personalizado
+- ✅ **Error logging** centralizado
+- ✅ **OAuth error logging** detallado
+- ✅ **Console logging** estructurado
+
+### Próximas Mejoras
+
+- [ ] **Winston** para logging avanzado
+- [ ] **Morgan** para HTTP request logging
+- [ ] **Health checks** endpoints
+- [ ] **Metrics** con Prometheus
+- [ ] **Alerting** con sistemas de monitoreo
+
+---
+
+## 🔄 Roadmap
+
+### ✅ **Completado**
+- Sistema de autenticación completo
+- OAuth con GitHub
+- Vistas responsivas con Handlebars
+- Control de acceso por roles
+- Manejo robusto de errores
+- Flash messages
+- Dockerización completa
+
+### 🚧 **En Progreso**
+- Documentación completa
+- Optimización de performance
+
+### 📋 **Próximas Características**
+- [ ] **Autenticación JWT** como alternativa
+- [ ] **Rate limiting** para prevenir abuso
+- [ ] **Tests automatizados** completos
+- [ ] **CI/CD pipeline** con GitHub Actions
+- [ ] **Swagger/OpenAPI** documentation
+- [ ] **Paginación** en endpoints
+- [ ] **Filtros y búsqueda** avanzada
+- [ ] **Notificaciones** por email
+- [ ] **Dashboard** de administración
+- [ ] **Audit logs** para seguridad
+
+---
+
+## 🤝 Contribución
+
+### Cómo Contribuir
+
+1. **Fork** el repositorio
+2. **Crea** una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
+3. **Commit** tus cambios (`git commit -m 'Agregar nueva característica'`)
+4. **Push** a la rama (`git push origin feature/nueva-caracteristica`)
+5. **Abre** un Pull Request
+
+### Estándares de Código
+
+- ✅ **ESLint** para linting
+- ✅ **Prettier** para formateo
+- ✅ **Conventional Commits** para mensajes
+- ✅ **JSDoc** para documentación
+- ✅ **Tests** para nuevas características
+
+---
 
 ## 📝 Licencia
 
 Este proyecto está bajo la Licencia ISC.
 
+---
+
 ## 👨‍💻 Autor
 
-Desarrollado como parte del curso Backend II de Coder House.
+**Jorge Cárdenas** - Desarrollado como parte del curso Backend II de Coder House.
+
+- 📧 **Email**: jorgecardenas9006@gmail.com
+- 🐙 **GitHub**: [@jorgecardenas9006](https://github.com/jorgecardenas9006)
+- 💼 **LinkedIn**: [Jorge Cárdenas](https://linkedin.com/in/jorgecardenas9006)
 
 ---
 
@@ -338,6 +638,10 @@ Desarrollado como parte del curso Backend II de Coder House.
 
 **¿Te gusta este proyecto? ¡Dale una ⭐!**
 
-[🐛 Reportar Bug](https://github.com/jorgecardenas9006/coder-77155/issues) • [💡 Solicitar Feature](https://github.com/jorgecardenas9006/coder-77155/issues)
+[🐛 Reportar Bug](https://github.com/jorgecardenas9006/coder-77155/issues) • [💡 Solicitar Feature](https://github.com/jorgecardenas9006/coder-77155/issues) • [📖 Documentación](https://github.com/jorgecardenas9006/coder-77155/wiki)
+
+---
+
+**Construido con ❤️ usando Node.js, Express, MongoDB y Passport.js**
 
 </div>
