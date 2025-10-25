@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().select('-password');
         res.json(users);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener los usuarios', error: error.message });
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const user = await User.create(req.body);
-        res.status(201).json({ message: 'Usuario creado correctamente', user });
+        res.status(201).json({ message: 'Usuario creado correctamente'});
     } catch (error) {
         res.status(500).json({ message: 'Error al crear el usuario', error: error.message });
     }
