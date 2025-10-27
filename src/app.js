@@ -2,7 +2,6 @@ import express from "express";
 import { join, __dirname } from "./utils/index.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import flash from "connect-flash";
 import usersRouter from './routes/users.router.js';
 import authRouter from './routes/auth.router.js'
 import viewsRouter from './routes/views.router.js';
@@ -48,33 +47,20 @@ app.use(express.static(join(__dirname, '..', '..', 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Sesiones solo para OAuth error handling (no para autenticación principal)
 app.use(
   session({
-    store: MongoStore.create({
-      mongoUrl: env.MONGO_URI,
-      ttl: 3200*20,
-    }),
     secret: env.SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 3600000 } // 1 hora
   })
 );
 
-// Configurar flash messages
-app.use(flash());
-
-// Middleware para hacer flash messages disponibles en vistas
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success');
-  res.locals.error_msg = req.flash('error');
-  res.locals.warning_msg = req.flash('warning');
-  res.locals.info_msg = req.flash('info');
-  next();
-});
-
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
+// NO usar passport.session() porque usamos JWT
 
 // ruta para los usuarios
 app.use('/api/users', usersRouter);

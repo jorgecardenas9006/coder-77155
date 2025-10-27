@@ -11,9 +11,10 @@
  */
 export const handlePassportError = (req, res, next) => {
   // Verificar si hay mensajes de error de Passport
-  if (req.session.messages && req.session.messages.length > 0) {
+  if (req.session?.messages && req.session.messages.length > 0) {
     const errorMessage = req.session.messages[0];
-    req.flash('error', errorMessage);
+    // Guardar error en session para mostrarlo en la vista
+    req.session.errorMessage = errorMessage;
     req.session.messages = []; // Limpiar mensajes después de usar
   }
   
@@ -30,7 +31,10 @@ export const handlePassportError = (req, res, next) => {
     };
     
     const message = errorMessages[req.query.error] || 'Error desconocido';
-    req.flash('error', message);
+    // Guardar error en session
+    if (req.session) {
+      req.session.errorMessage = message;
+    }
   }
   
   next();
@@ -46,7 +50,10 @@ export const handleGitHubError = (req, res, next) => {
   // Verificar errores específicos de GitHub
   if (req.query.error_description) {
     const errorDescription = decodeURIComponent(req.query.error_description);
-    req.flash('error', errorDescription);
+    // Guardar error en session
+    if (req.session) {
+      req.session.errorMessage = errorDescription;
+    }
   }
   
   next();

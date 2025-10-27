@@ -1,5 +1,6 @@
 import express from 'express';
-import { isAuthenticatedView, isAdminView, isModeratorView } from '../middlewares/index.js';
+import { isAdmin, isModerator, asyncHandler } from '../middlewares/index.js';
+import { passportCall } from '../config/passport.config.js';
 
 const router = express.Router();
 
@@ -10,7 +11,8 @@ router.get('/', (req, res) => {
 
 //ruta de login
 router.get('/login', (req, res) => {
-    if (req.session.user) {
+    // Verificar si ya tiene cookie JWT
+    if (req.cookies.coderCookie) {
         return res.redirect('/profile');
     }
     res.render('layouts/login', { title: 'Login' });
@@ -22,25 +24,26 @@ router.get('/register', (req, res) => {
 });
 
 //ruta de profile
-router.get('/profile', isAuthenticatedView, (req, res) => {
+router.get('/profile', passportCall('jwt'), (req, res) => {
     res.render('layouts/profile', { 
         title: 'Profile',
-        user: req.session.user 
+        user: req.user 
     });
 });
 
 //ruta de usuarios (solo admin)
-router.get('/users', isAdminView, (req, res) => {
+router.get('/users', passportCall('jwt'), isAdmin, asyncHandler(async(req, res) => {
     res.render('layouts/users', { 
-        title: 'Gestión de Usuarios'
+        title: 'Gestión de Usuarios',
+        user: req.user
     });
-});
+}));
 
 //ruta de moderación (solo moderador o admin)
-router.get('/moderation', isModeratorView, (req, res) => {
+router.get('/moderation', passportCall('jwt'), isModerator, (req, res) => {
     res.render('layouts/moderation', { 
         title: 'Panel de Moderación',
-        user: req.session.user
+        user: req.user
     });
 });
 
@@ -51,7 +54,11 @@ router.get('/recovery-password', (req, res) => {
 
 //ruta de error OAuth
 router.get('/oauth-error', (req, res) => {
-    const errorMessage = req.flash('error')[0] || 'Error desconocido durante la autenticación';
+    const errorMessage = req.session?.errorMessage || 'Error desconocido durante la autenticación';
+    // Limpiar mensaje después de mostrarlo
+    if (req.session) {
+      delete req.session.errorMessage;
+    }
     res.render('layouts/oauth-error', {
         title: 'Error de Autenticación',
         errorMessage: errorMessage

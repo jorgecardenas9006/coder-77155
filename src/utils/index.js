@@ -9,5 +9,5 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const join = (...paths) => pathJoin(...paths)
 
 // Exportar todo
-export { createHash, isValidPassword } from './pass.js'
+export { createHash, isValidPassword, generateToken, verifyToken } from './pass.js'
 export { __dirname, join }

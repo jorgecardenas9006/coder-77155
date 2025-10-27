@@ -4,37 +4,36 @@
  */
 
 /**
- * Verifica si el usuario está autenticado
+ * Verifica si el usuario está autenticado (JWT)
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isAuthenticated = (req, res, next) => {
-    if (!req.session.user) {
-        return res.status(401).json({ 
-            message: 'Unauthorized - User not authenticated',
-            code: 'AUTH_REQUIRED'
-        });
+    if (req.user) {
+        return next();
     }
-    next();
+    return res.status(401).json({ 
+        message: 'Unauthorized - User not authenticated',
+        code: 'AUTH_REQUIRED'
+    });
 };
 
 /**
- * Verifica si el usuario tiene rol de administrador
+ * Verifica si el usuario tiene rol de administrador (JWT)
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isAdmin = (req, res, next) => {
-    // Verificar autenticación primero
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ 
             message: 'Unauthorized - User not authenticated',
             code: 'AUTH_REQUIRED'
         });
     }
     
-    if (req.session.user.role !== 'admin') {
+    if (req.user.role !== 'admin') {
         return res.status(403).json({ 
             message: 'Forbidden - Admin access required',
             code: 'ADMIN_REQUIRED'
@@ -44,14 +43,13 @@ export const isAdmin = (req, res, next) => {
 };
 
 /**
- * Verifica si el usuario tiene rol de moderador o superior
+ * Verifica si el usuario tiene rol de moderador o superior (JWT)
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isModerator = (req, res, next) => {
-    // Verificar autenticación primero
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ 
             message: 'Unauthorized - User not authenticated',
             code: 'AUTH_REQUIRED'
@@ -59,7 +57,7 @@ export const isModerator = (req, res, next) => {
     }
     
     const allowedRoles = ['admin', 'moderator'];
-    if (!allowedRoles.includes(req.session.user.role)) {
+    if (!allowedRoles.includes(req.user.role)) {
         return res.status(403).json({ 
             message: 'Forbidden - Moderator access required',
             code: 'MODERATOR_REQUIRED'
@@ -75,36 +73,35 @@ export const isModerator = (req, res, next) => {
  * @param {Function} next - Next middleware function
  */
 export const isActive = (req, res, next) => {
-    // Verificar autenticación primero
-    if (!req.session.user) {
+    if (!req.user) {
         return res.status(401).json({ 
             message: 'Unauthorized - User not authenticated',
             code: 'AUTH_REQUIRED'
         });
     }
 
-    if (!req.session.user.isActive) {
+    if (!req.user.isActive) {
         return res.render('layouts/role-error', {
             title: 'Cuenta Inactiva',
             errorMessage: 'Tu cuenta está inactiva y no puedes acceder a esta funcionalidad.',
             additionalInfo: 'Por favor, contacta al administrador del sistema para reactivar tu cuenta.',
             redirectUrl: '/login',
             redirectDelay: 5,
-            user: req.session.user
+            user: req.user
         });
     }
     next();
 };
 
 /**
- * Middleware de autenticación para vistas
+ * Middleware de autenticación para vistas (JWT)
  * Muestra una página de error temporal y redirige al login si no está autenticado
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isAuthenticatedView = (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.render('layouts/auth-error', {
             title: 'Acceso No Autorizado',
             errorMessage: 'Debes iniciar sesión para acceder a esta página.',
@@ -116,13 +113,13 @@ export const isAuthenticatedView = (req, res, next) => {
 };
 
 /**
- * Middleware de autenticación para vistas - Verifica rol de admin
+ * Middleware de autenticación para vistas - Verifica rol de admin (JWT)
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isAdminView = (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.render('layouts/auth-error', {
             title: 'Acceso No Autorizado',
             errorMessage: 'Debes iniciar sesión para acceder a esta página.',
@@ -131,27 +128,27 @@ export const isAdminView = (req, res, next) => {
         });
     }
     
-    if (req.session.user.role !== 'admin') {
+    if (req.user.role !== 'admin') {
         return res.render('layouts/role-error', {
             title: 'Acceso Denegado - Administrador Requerido',
             errorMessage: 'Solo los administradores pueden acceder a esta página.',
             additionalInfo: 'Tu rol actual no tiene permisos suficientes para acceder a esta funcionalidad.',
             redirectUrl: '/profile',
             redirectDelay: 5,
-            user: req.session.user
+            user: req.user
         });
     }
     next();
 };
 
 /**
- * Middleware de autenticación para vistas - Verifica rol de moderador o superior
+ * Middleware de autenticación para vistas - Verifica rol de moderador o superior (JWT)
  * @param {Object} req - Request object
  * @param {Object} res - Response object
  * @param {Function} next - Next middleware function
  */
 export const isModeratorView = (req, res, next) => {
-    if (!req.session.user) {
+    if (!req.user) {
         return res.render('layouts/auth-error', {
             title: 'Acceso No Autorizado',
             errorMessage: 'Debes iniciar sesión para acceder a esta página.',
@@ -161,14 +158,14 @@ export const isModeratorView = (req, res, next) => {
     }
     
     const allowedRoles = ['admin', 'moderator'];
-    if (!allowedRoles.includes(req.session.user.role)) {
+    if (!allowedRoles.includes(req.user.role)) {
         return res.render('layouts/role-error', {
             title: 'Acceso Denegado - Moderador Requerido',
             errorMessage: 'Solo los moderadores y administradores pueden acceder a esta página.',
             additionalInfo: 'Tu rol actual no tiene permisos suficientes para acceder a esta funcionalidad.',
             redirectUrl: '/profile',
             redirectDelay: 5,
-            user: req.session.user
+            user: req.user
         });
     }
     next();
@@ -182,9 +179,6 @@ export const isModeratorView = (req, res, next) => {
  * @param {Function} next - Next middleware function
  */
 export const optionalAuth = (req, res, next) => {
-    // Si hay usuario en sesión, lo agregamos al request
-    if (req.session.user) {
-        req.user = req.session.user;
-    }
+    // Ya tiene req.user del JWT si está autenticado
     next();
 };

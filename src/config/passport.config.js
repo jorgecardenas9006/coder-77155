@@ -4,11 +4,54 @@ import github from "passport-github2"
 import User from '../models/user.model.js';
 import { createHash, isValidPassword } from "../utils/index.js";
 import { env } from "../config/index.js";
+import jwt from "passport-jwt"
 
 const LocalStrategy = local.Strategy;
 const GitHubStrategy = github.Strategy
+const JWTStrategy = jwt.Strategy
+const ExtractJWT = jwt.ExtractJwt
+
+const cookieExtractor = (req) =>{
+  let token = null
+  // Buscar en cookie
+  if (req && req.cookies && req.cookies.coderCookie) {
+    token = req.cookies.coderCookie
+  }
+  // También buscar en header Authorization como fallback
+  else if (req && req.headers && req.headers.authorization) {
+    token = req.headers.authorization.split(' ')[1]
+  }
+  return token
+}
+
+//Middleware para errores de passport
+const passportCall = (strategy) => {
+    return async(req,res,next) => {
+        passport.authenticate(strategy, function(err,user, info) {
+            if(err) 
+                return next(err)
+            if(!user)
+                return res.status(401).send({error: info.messages?info.messages: info.toString()})
+            req.user = user
+            return next()
+        })(req, res, next)
+    }
+}
+
 
 const initializePassport = () => {
+  //Estrategia para usar jwt
+  passport.use('jwt', new JWTStrategy({
+    jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+    secretOrKey: env.SECRET
+  }, async (jwt_payload, done) => {
+    try {
+      return done(null, jwt_payload)
+    } catch (error) {
+      return done(error)
+    }
+  }))
+
   // Estrategia para REGISTRO - llamada "register"
   passport.use('register', new LocalStrategy(
     {
@@ -92,7 +135,7 @@ const initializePassport = () => {
   passport.use('github', new GitHubStrategy({
     clientID: env.GITHUB_CLIENT_ID,
     clientSecret: env.GITHUB_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/api/auth/githubcallback"
+    callbackURL: `http://localhost:${env.PORT || 3000}/api/auth/githubcallback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       
@@ -179,5 +222,5 @@ const initializePassport = () => {
 
 
 };
-
+export { passportCall };
 export default initializePassport;
