@@ -21,10 +21,10 @@
 
 ### 🔐 **Sistema de Autenticación Completo**
 - ✅ **Registro y Login** con email y contraseña
+- ✅ **Autenticación JWT** con tokens seguros en cookies
 - ✅ **Autenticación OAuth** con GitHub
-- ✅ **Gestión de sesiones** con express-session y MongoDB
 - ✅ **Control de acceso** basado en roles (user, admin, moderator)
-- ✅ **Flash messages** para notificaciones elegantes
+- ✅ **Tokens JWT** almacenados en cookies httpOnly
 - ✅ **Manejo robusto de errores** con vistas personalizadas
 
 ### 🎨 **Interfaz de Usuario**
@@ -38,14 +38,16 @@
 ### 🛡️ **Seguridad y Validación**
 - ✅ **Validación robusta** con Mongoose schemas
 - ✅ **Hashing de contraseñas** con bcrypt
+- ✅ **Autenticación JWT** con Passport.js
 - ✅ **Middleware de autenticación** personalizado
-- ✅ **Protección de rutas** por roles
+- ✅ **Protección de rutas** por roles con JWT
 - ✅ **Sanitización de datos** de entrada
-- ✅ **Manejo seguro de sesiones**
+- ✅ **Tokens seguros** con expiración de 24 horas
 
 ### 🏗️ **Arquitectura Moderna**
 - ✅ **ES Modules** (import/export)
 - ✅ **Arquitectura MVC** bien estructurada
+- ✅ **Autenticación JWT** con Passport
 - ✅ **Middleware modular** y reutilizable
 - ✅ **Configuración centralizada**
 - ✅ **Logging estructurado**
@@ -130,38 +132,50 @@
 #### 1. **Registro Tradicional**
 - Email y contraseña
 - Validación completa de datos
-- Hash seguro de contraseñas
+- Hash seguro de contraseñas con bcrypt
 - Verificación de email único
+- **Genera token JWT** en cookie `coderCookie`
 
 #### 2. **Login Tradicional**
 - Autenticación con email/contraseña
-- Gestión de sesiones
+- **Genera token JWT** con datos del usuario
+- Token almacenado en cookie httpOnly (`coderCookie`)
+- Expiración de 24 horas
 - Redirección automática según rol
 
 #### 3. **Autenticación OAuth con GitHub**
 - Login con cuenta de GitHub
 - Obtención automática de datos de perfil
 - Vinculación con cuentas existentes
+- **Genera token JWT** al autenticarse
 - Manejo de errores específicos
 
-### Flujo de Autenticación
+#### 4. **Autenticación JWT**
+- **Token JWT** almacenado en cookie httpOnly
+- Todos los datos del usuario en el token
+- Validación automática con `passportCall('jwt')`
+- Sin necesidad de sesiones en base de datos
+- Stateless authentication
+
+### Flujo de Autenticación JWT
 
 ```mermaid
 graph TD
     A[Usuario] --> B{¿Tiene cuenta?}
-    B -->|No| C[Registro]
-    B -->|Sí| D[Login]
+    B -->|No| C[POST /api/auth/register]
+    B -->|Sí| D[POST /api/auth/login]
     C --> E[Validación de datos]
-    E --> F[Crear usuario]
-    F --> G[Sesión iniciada]
+    E --> F[Crear usuario en MongoDB]
+    F --> G[Generar token JWT]
     D --> H[Verificar credenciales]
     H --> I{¿Válidas?}
     I -->|Sí| G
     I -->|No| J[Error de login]
-    G --> K[Redirección según rol]
-    K --> L[Admin: /users]
-    K --> M[User: /profile]
-    K --> N[Moderator: /moderation]
+    G --> L[Guardar token en cookie 'coderCookie']
+    L --> M[Redirección según rol]
+    M --> N[Admin: /users]
+    M --> O[User: /profile]
+    M --> P[Moderator: /moderation]
 ```
 
 ### Roles y Permisos
@@ -183,9 +197,10 @@ graph TD
 | Método | Endpoint | Descripción | Autenticación |
 |--------|----------|-------------|---------------|
 | `POST` | `/api/auth/register` | Registrar nuevo usuario | ❌ |
-| `POST` | `/api/auth/login` | Iniciar sesión | ❌ |
-| `GET` | `/api/auth/profile` | Obtener perfil actual | ✅ |
-| `POST` | `/api/auth/logout` | Cerrar sesión | ✅ |
+| `POST` | `/api/auth/login` | Iniciar sesión (genera JWT) | ❌ |
+| `GET` | `/api/auth/profile` | Obtener perfil actual | ✅ JWT |
+| `GET` | `/api/auth/current` | Obtener usuario actual | ✅ JWT |
+| `POST` | `/api/auth/logout` | Cerrar sesión | ❌ |
 | `GET` | `/api/auth/github` | Iniciar OAuth GitHub | ❌ |
 | `GET` | `/api/auth/githubcallback` | Callback OAuth GitHub | ❌ |
 
@@ -193,9 +208,8 @@ graph TD
 
 | Método | Endpoint | Descripción | Autenticación | Rol |
 |--------|----------|-------------|---------------|-----|
-| `GET` | `/api/users` | Obtener todos los usuarios | ✅ | admin |
-| `POST` | `/api/users` | Crear nuevo usuario | ❌ | - |
-| `DELETE` | `/api/users/:id` | Eliminar usuario | ✅ | admin |
+| `GET` | `/api/users` | Obtener todos los usuarios | ✅ JWT | admin |
+| `DELETE` | `/api/users/:id` | Eliminar usuario | ✅ JWT | admin |
 
 ### Ejemplos de Uso
 
@@ -224,26 +238,32 @@ curl -X POST http://localhost:3000/api/auth/login \
     "email": "juan.perez@example.com",
     "password": "miPassword123"
   }'
+
+# Respuesta:
+{
+  "status": "success",
+  "message": "Login exitoso",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "...",
+    "email": "juan.perez@example.com",
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "role": "user"
+  }
+}
 ```
 
 #### 👥 **Obtener Usuarios (Admin)**
 ```bash
 curl -X GET http://localhost:3000/api/users \
-  -H "Cookie: connect.sid=tu_session_id"
+  -H "Cookie: coderCookie=tu_jwt_token"
 ```
 
-#### 👥 **Crear Usuario Admin**
+#### 🔐 **Obtener Perfil Actual**
 ```bash
-curl -X POST http://localhost:3000/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "firstName": "Admin",
-    "lastName": "Sistema",
-    "email": "admin@sistema.com",
-    "password": "adminPassword123",
-    "role": "admin",
-    "phone": "+5491123456789"
-  }'
+curl -X GET http://localhost:3000/api/auth/profile \
+  -H "Cookie: coderCookie=tu_jwt_token"
 ```
 
 ### Respuestas de la API
@@ -262,6 +282,39 @@ curl -X POST http://localhost:3000/api/users \
   "status": "error",
   "message": "El email ya está en uso",
   "code": "EMAIL_EXISTS"
+}
+```
+
+### Cómo Funciona la Autenticación JWT
+
+1. **Login**: El usuario inicia sesión con email y contraseña
+2. **Generación de Token**: Se crea un token JWT con los datos del usuario
+3. **Almacenamiento**: El token se guarda en una cookie httpOnly llamada `coderCookie`
+4. **Validación**: Cada request protegida valida el token automáticamente
+5. **Acceso**: El middleware `passportCall('jwt')` decodifica el token y expone `req.user`
+
+**Estructura del Token JWT:**
+```json
+{
+  "id": "user_id",
+  "email": "user@example.com",
+  "role": "user|admin|moderator",
+  "firstName": "Nombre",
+  "lastName": "Apellido",
+  "phone": "+1234567890",
+  "avatar": "url",
+  "dateOfBirth": "1990-01-01",
+  "address": "Dirección",
+  "city": "Ciudad",
+  "isActive": true,
+  "isEmailVerified": false,
+  "preferences": {
+    "language": "es",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "notifications": { "email": true, "push": true, "sms": false }
+  },
+  "iat": 1234567890,
+  "exp": 1234657890
 }
 ```
 
@@ -311,20 +364,21 @@ src/
 #### **🔧 Configuración (`config/`)**
 - **`env.js`**: Variables de entorno con valores por defecto
 - **`db.js`**: Conexión a MongoDB con manejo de errores
-- **`passport.config.js`**: Estrategias de autenticación (Local + GitHub)
+- **`passport.config.js`**: Estrategias de autenticación (JWT + Local + GitHub)
 - **`index.js`**: Exportaciones centralizadas
 
 #### **🛡️ Middlewares (`middlewares/`)**
-- **`auth.middleware.js`**: Autenticación y autorización por roles
+- **`auth.middleware.js`**: Autenticación y autorización por roles con JWT
 - **`validation.middleware.js`**: Validación de datos de entrada
 - **`error.middleware.js`**: Manejo centralizado de errores
 - **`oauth.middleware.js`**: Manejo específico de errores OAuth
+- **`passportCall`**: Middleware helper para JWT authentication
 
 #### **🎨 Vistas (`views/`)**
 - **Diseño responsivo** con Bootstrap 5.3
 - **Animaciones suaves** y efectos visuales
-- **Flash messages** integrados
-- **Control de acceso** por roles
+- **Control de acceso** por roles con JWT
+- **Datos de usuario** desde token JWT
 
 ### Flujo de Datos
 
@@ -455,13 +509,16 @@ npm run build    # Construye para producción (próximamente)
 ### Medidas de Seguridad Implementadas
 
 - ✅ **Hashing de contraseñas** con bcrypt
-- ✅ **Sesiones seguras** con express-session
+- ✅ **Autenticación JWT** con tokens seguros
+- ✅ **Cookies httpOnly** para tokens
 - ✅ **Validación de entrada** con Mongoose
 - ✅ **Sanitización de datos** automática
-- ✅ **Control de acceso** basado en roles
+- ✅ **Control de acceso** basado en roles con JWT
 - ✅ **Manejo seguro de errores** sin exposición de datos
 - ✅ **Variables de entorno** para datos sensibles
 - ✅ **Middleware de autenticación** robusto
+- ✅ **Expiración de tokens** (24 horas)
+- ✅ **Stateless authentication** sin sesiones en BD
 
 ### Mejores Prácticas
 
@@ -572,20 +629,20 @@ tests/
 ## 🔄 Roadmap
 
 ### ✅ **Completado**
-- Sistema de autenticación completo
+- Sistema de autenticación JWT completo
 - OAuth con GitHub
 - Vistas responsivas con Handlebars
-- Control de acceso por roles
+- Control de acceso por roles con JWT
 - Manejo robusto de errores
-- Flash messages
+- Tokens JWT en cookies httpOnly
 - Dockerización completa
+- Autenticación stateless
 
 ### 🚧 **En Progreso**
 - Documentación completa
 - Optimización de performance
 
 ### 📋 **Próximas Características**
-- [ ] **Autenticación JWT** como alternativa
 - [ ] **Rate limiting** para prevenir abuso
 - [ ] **Tests automatizados** completos
 - [ ] **CI/CD pipeline** con GitHub Actions
@@ -595,6 +652,8 @@ tests/
 - [ ] **Notificaciones** por email
 - [ ] **Dashboard** de administración
 - [ ] **Audit logs** para seguridad
+- [ ] **Refresh tokens** para mayor seguridad
+- [ ] **Revocación de tokens**
 
 ---
 
