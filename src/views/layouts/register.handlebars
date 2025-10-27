@@ -36,7 +36,7 @@
                             <div id="alertContainer"></div>
                             
                             <!-- Formulario de Registro -->
-                            <form id="registerForm" action="/api/auth/register" method="POST">
+                            <form id="registerForm" action="/api/sessions/register" method="POST">
                                 <!-- Campos requeridos -->
                                 <div class="form-row mb-3">
                                     <div class="form-floating">
@@ -212,7 +212,7 @@
             document.getElementById('alertContainer').innerHTML = '';
             
             try {
-                const response = await fetch('/api/auth/register', {
+                const response = await fetch('/api/sessions/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

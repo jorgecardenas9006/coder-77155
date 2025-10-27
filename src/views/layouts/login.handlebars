@@ -71,7 +71,7 @@
                             <div id="alertContainer"></div>
                             
                             <!-- Formulario de Login -->
-                            <form id="loginForm" action="/api/auth/login" method="POST">
+                            <form id="loginForm" action="/api/sessions/login" method="POST">
                                 <div class="form-floating mb-3">
                                     <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
                                     <label for="email">
@@ -113,7 +113,7 @@
                             
                             <!-- Botón de GitHub -->
                             <div class="d-grid mb-3">
-                                <a href="/api/auth/github" class="btn btn-dark btn-github">
+                                <a href="/api/sessions/github" class="btn btn-dark btn-github">
                                     <i class="bi bi-github me-2"></i>
                                     Continuar con GitHub
                                 </a>
@@ -163,7 +163,7 @@
             document.getElementById('alertContainer').innerHTML = '';
             
             try {
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch('/api/sessions/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

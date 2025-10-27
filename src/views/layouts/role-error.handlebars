@@ -409,7 +409,7 @@
         // Función para cerrar sesión
         async function confirmLogout() {
             try {
-                const response = await fetch('/api/auth/logout', {
+                const response = await fetch('/api/sessions/logout', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

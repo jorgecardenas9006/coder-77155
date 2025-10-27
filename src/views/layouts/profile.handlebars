@@ -222,7 +222,7 @@
             logoutBtn.disabled = true;
             
             // Hacer la petición de logout usando la función genérica
-            const data = await makeApiRequest('/api/auth/logout', {
+            const data = await makeApiRequest('/api/sessions/logout', {
                 method: 'POST'
             });
             
@@ -238,7 +238,7 @@
         
         // Función para cargar datos del perfil (ejemplo de uso)
         async function loadProfileData() {
-            const data = await makeApiRequest('/api/auth/profile');
+            const data = await makeApiRequest('/api/sessions/profile');
             if (data) {
                 console.log('Datos del perfil cargados:', data);
                 // Aquí podrías actualizar la UI con los datos
@@ -247,7 +247,7 @@
         
         // Función para actualizar perfil (ejemplo de uso)
         async function updateProfile(profileData) {
-            const data = await makeApiRequest('/api/auth/profile', {
+            const data = await makeApiRequest('/api/sessions/profile', {
                 method: 'PUT',
                 body: JSON.stringify(profileData)
             });

@@ -162,8 +162,8 @@
 ```mermaid
 graph TD
     A[Usuario] --> B{¿Tiene cuenta?}
-    B -->|No| C[POST /api/auth/register]
-    B -->|Sí| D[POST /api/auth/login]
+    B -->|No| C[POST /api/sessions/register]
+    B -->|Sí| D[POST /api/sessions/login]
     C --> E[Validación de datos]
     E --> F[Crear usuario en MongoDB]
     F --> G[Generar token JWT]
@@ -196,13 +196,13 @@ graph TD
 
 | Método | Endpoint | Descripción | Autenticación |
 |--------|----------|-------------|---------------|
-| `POST` | `/api/auth/register` | Registrar nuevo usuario | ❌ |
-| `POST` | `/api/auth/login` | Iniciar sesión (genera JWT) | ❌ |
-| `GET` | `/api/auth/profile` | Obtener perfil actual | ✅ JWT |
-| `GET` | `/api/auth/current` | Obtener usuario actual | ✅ JWT |
-| `POST` | `/api/auth/logout` | Cerrar sesión | ❌ |
-| `GET` | `/api/auth/github` | Iniciar OAuth GitHub | ❌ |
-| `GET` | `/api/auth/githubcallback` | Callback OAuth GitHub | ❌ |
+| `POST` | `/api/sessions/register` | Registrar nuevo usuario | ❌ |
+| `POST` | `/api/sessions/login` | Iniciar sesión (genera JWT) | ❌ |
+| `GET` | `/api/sessions/profile` | Obtener perfil actual | ✅ JWT |
+| `GET` | `/api/sessions/current` | Obtener usuario actual | ✅ JWT |
+| `POST` | `/api/sessions/logout` | Cerrar sesión | ❌ |
+| `GET` | `/api/sessions/github` | Iniciar OAuth GitHub | ❌ |
+| `GET` | `/api/sessions/githubcallback` | Callback OAuth GitHub | ❌ |
 
 #### 👥 **Usuarios**
 
@@ -215,7 +215,7 @@ graph TD
 
 #### 🔐 **Registro de Usuario**
 ```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:3000/api/sessions/register \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "Juan",
@@ -232,7 +232,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 #### 🔐 **Login de Usuario**
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST http://localhost:3000/api/sessions/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "juan.perez@example.com",
@@ -262,7 +262,7 @@ curl -X GET http://localhost:3000/api/users \
 
 #### 🔐 **Obtener Perfil Actual**
 ```bash
-curl -X GET http://localhost:3000/api/auth/profile \
+curl -X GET http://localhost:3000/api/sessions/profile \
   -H "Cookie: coderCookie=tu_jwt_token"
 ```
 
@@ -335,7 +335,7 @@ src/
 ├── models/                    # Modelos de datos
 │   └── user.model.js         # Modelo de Usuario
 ├── routes/                    # Rutas de la aplicación
-│   ├── auth.router.js         # Rutas de autenticación
+│   ├── sessions.router.js     # Rutas de autenticación y sesiones
 │   ├── users.router.js        # Rutas de usuarios
 │   └── views.router.js        # Rutas de vistas
 ├── middlewares/               # Middlewares personalizados
@@ -490,7 +490,7 @@ GITHUB_CLIENT_SECRET=tu_client_secret_de_github
 2. **Crea una nueva OAuth App** con:
    - **Application name**: Tu aplicación
    - **Homepage URL**: http://localhost:3000
-   - **Authorization callback URL**: http://localhost:3000/api/auth/githubcallback
+   - **Authorization callback URL**: http://localhost:3000/api/sessions/githubcallback
 3. **Copia el Client ID y Client Secret** a tu archivo `.env`
 
 ### Scripts Disponibles
@@ -689,7 +689,7 @@ Este proyecto está bajo la Licencia ISC.
 
 - 📧 **Email**: jorgecardenas9006@gmail.com
 - 🐙 **GitHub**: [@jorgecardenas9006](https://github.com/jorgecardenas9006)
-- 💼 **LinkedIn**: [Jorge Cárdenas](https://linkedin.com/in/jorgecardenas9006)
+- 💼 **LinkedIn**: [Jorge Cárdenas](https://linkedin.com/in/jorge-leonardo-cárdenas-montenegro-7a36b3166)
 
 ---
 

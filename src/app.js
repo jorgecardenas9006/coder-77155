@@ -3,7 +3,7 @@ import { join, __dirname } from "./utils/index.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import usersRouter from './routes/users.router.js';
-import authRouter from './routes/auth.router.js'
+import sessionsRouter from './routes/sessions.router.js'
 import viewsRouter from './routes/views.router.js';
 import { env, connectDB } from "./config/index.js";
 import cookieParser from "cookie-parser";
@@ -65,8 +65,8 @@ app.use(passport.initialize());
 // ruta para los usuarios
 app.use('/api/users', usersRouter);
 
-// ruta para autenticación
-app.use('/api/auth', authRouter)
+// ruta para autenticación (sessions)
+app.use('/api/sessions', sessionsRouter)
 
 // ruta de home
 app.use('/', viewsRouter);
