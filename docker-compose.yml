@@ -1,0 +1,42 @@
+services:
+  mongodb:
+    image: mongo:7.0.2
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  postgresdb:
+    image: postgres:16.1
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-postgres}
+
+  app:
+    build:
+      context: .
+      target: development
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=postgresdb
+    depends_on:
+      - mongodb
+      - postgresdb
+    restart: unless-stopped
+
+volumes:
+  mongodb_data: 
+    driver: local
+  postgres_data:
+    driver: local
