@@ -18,7 +18,7 @@ app.use(cookieParser());
 // Inicializar Passport (debe ir después de session)
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session()); // Necesario para usar sesiones con Passport
+
 
 // Middleware global para logging de requests (debe ir antes de las rutas)
 app.use(requestLogger);
