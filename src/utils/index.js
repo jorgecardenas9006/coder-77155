@@ -1,4 +1,4 @@
 import { getDirname } from './pathUtils.js';
-import { ResponseHandler } from './responseHandler.js';
+import {createHash, isValidPassword, generateToken, verifyToken} from './pass.js';
 
-export { getDirname, ResponseHandler };
+export { getDirname, createHash, isValidPassword, generateToken, verifyToken };

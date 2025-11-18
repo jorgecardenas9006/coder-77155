@@ -1,5 +1,5 @@
 import { ProductsService } from '../services/products.service.js';
-import { ResponseHandler } from '../utils/index.js';
+import { ResponseHandler } from '../middlewares/index.js';
 import { CreateProductDto, UpdateProductDto } from '../dto/products/index.js';
 
 export class ProductsController {
