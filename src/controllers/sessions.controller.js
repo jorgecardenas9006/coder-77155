@@ -6,7 +6,9 @@ import {
     AuthResponseDto,
     JWTPayloadDto 
 } from '../dto/sessions/index.js';
-
+import { SessionsRepository } from '../repositories/sessions.repository.js';
+import { transporter } from '../config/index.js';
+import { createHash } from '../utils/index.js';
 export class SessionsController {
     /**
      * Crea un token JWT con los datos del usuario usando DTO
@@ -30,6 +32,10 @@ export class SessionsController {
             maxAge: 86400000, // 24 horas
             sameSite: 'strict'
         });
+    }
+
+    constructor() {
+        this.sessionsRepository = new SessionsRepository();
     }
 
     async registerUser(req, res) {
@@ -74,6 +80,37 @@ export class SessionsController {
             return ResponseHandler.success(res, { user: userResponse.toJSON() }, 'Usuario actual obtenido exitosamente');
         } catch (error) {
             return ResponseHandler.serverError(res, 'Error al obtener el usuario actual', error);
+        }
+    }
+    async changePassword(req, res) {
+        try {
+            const { id } = req.params;
+            const { newPassword } = req.body;
+            const extractedDataKey = await this.sessionsRepository.validateCode(id);
+            const hashedPassword = createHash(newPassword);
+            if(!extractedDataKey) {
+                return ResponseHandler.badRequest(res, 'Código no válido');
+            }
+            await this.sessionsRepository.changePassword(extractedDataKey, hashedPassword);
+            await this.sessionsRepository.deleteCode(id);
+            return ResponseHandler.success(res, 'Contraseña cambiada exitosamente');
+            } catch (error) {
+                return ResponseHandler.serverError(res, 'Error al cambiar la contraseña', error);
+        }
+    }
+    async forgotPassword(req, res) {
+        try {
+            const code = await this.sessionsRepository.forgotPassword(req.body.email);
+            const mail = {
+                from: env.EMAIL_USER,
+                to: req.body.email,
+                subject: 'Código de recuperación de contraseña',
+                text: `Tu código de recuperación de contraseña es: ${code}`,
+            };
+            await transporter.sendMail(mail);
+            return ResponseHandler.success(res, 'Código de recuperación de contraseña enviado exitosamente');
+        } catch (error) {
+            return ResponseHandler.serverError(res, 'Error al olvidar la contraseña', error);
         }
     }
 }

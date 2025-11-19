@@ -1,3 +1,5 @@
 import env from './env.js';
+import redisClient from './redis.js';
+import transporter from './nodemailer.js';
 
-export { env };
+export { env, redisClient, transporter };

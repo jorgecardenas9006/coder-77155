@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser';
 import { requestLogger, errorHandler, notFound } from './middlewares/index.js';
 import initializePassport from './config/passport.config.js';
 import passport from 'passport';
-
+import redisClient from './config/redis.js';
 const app = express();
 
 app.use(express.json());
@@ -36,6 +36,10 @@ initializeDatabase();
 
 // Inicializar conexión a MongoDB
 connectDB(env.MONGODB_URI);
+
+// Inicializar conexión a Redis
+
+await redisClient.connect();
 
 app.listen(env.PORT, () => {
     console.log(`Server is running on port ${env.PORT}`);

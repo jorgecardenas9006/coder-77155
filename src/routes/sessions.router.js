@@ -45,4 +45,16 @@ router.get(
     asyncHandler(sessionsController.getCurrentUser.bind(sessionsController))
 );
 
+// POST - Forgot password
+router.post(
+    '/forgotpassword',
+    asyncHandler(sessionsController.forgotPassword.bind(sessionsController))
+);
+
+// Cmabio de contraseña
+router.post(
+    '/changepassword/:id',
+    asyncHandler(sessionsController.changePassword.bind(sessionsController))
+);
+
 export default router;

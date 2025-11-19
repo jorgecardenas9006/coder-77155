@@ -4,4 +4,7 @@ export class SessionsDao {
     async registerUser(email, password) {
         return await SessionsModel.create({ email, password });
     }
+    async changePassword(email, newPassword) {
+        return await SessionsModel.findOneAndUpdate({ email }, { password: newPassword });
+    }
 }
